@@ -1,0 +1,9 @@
+feedparser
+yt-dlp
+opencv-python
+pytesseract
+Pillow
+flask
+requests
+python-dotenv
+schedule

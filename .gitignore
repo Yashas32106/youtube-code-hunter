@@ -1,0 +1,7 @@
+.env
+__pycache__/
+*.pyc
+frames/
+seen_videos.json
+results_log.json
+video.mp4
