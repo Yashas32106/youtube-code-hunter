@@ -3,8 +3,9 @@ import re
 import os
 from PIL import Image
 
-if os.path.exists(r"C:\Program Files\Tesseract-OCR\tesseract.exe"):
-    pytesseract.pytesseract.tesseract_cmd = r"C:\Program Files\Tesseract-OCR\tesseract.exe"
+_win_tesseract = r"C:\Program Files\Tesseract-OCR\tesseract.exe"
+if os.path.exists(_win_tesseract):
+    pytesseract.pytesseract.tesseract_cmd = _win_tesseract
 
 # Exact format: XXXX-XXXXXX-XXXX (4-6-4 alphanumeric)
 CODE_PATTERN = re.compile(r'\b([A-Z0-9]{4}-[A-Z0-9]{6}-[A-Z0-9]{4})\b')
