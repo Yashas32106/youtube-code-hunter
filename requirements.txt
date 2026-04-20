@@ -1,6 +1,6 @@
 feedparser
 yt-dlp
-opencv-python
+opencv-python-headless
 pytesseract
 Pillow
 flask
