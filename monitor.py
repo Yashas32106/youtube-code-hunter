@@ -49,6 +49,6 @@ def subscribe_to_channel(channel_id, callback_url):
         }
     )
     if response.status_code == 202:
-        print(f"✅ Subscribed to channel: {channel_id}")
+        print(f"Subscribed to channel: {channel_id}")
     else:
-        print(f"❌ Subscription failed: {response.status_code}")
+        print(f"Subscription failed: {response.status_code}")
