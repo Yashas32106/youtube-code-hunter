@@ -19,15 +19,26 @@ def preprocess_frame(image_path):
     return img
 
 
+def is_real_code(code):
+    parts = code.replace("-", "")
+    has_letter = any(c.isalpha() for c in parts)
+    has_digit = any(c.isdigit() for c in parts)
+    return has_letter and has_digit
+
+
 def extract_codes_from_frame(image_path):
     img = preprocess_frame(image_path)
     config = "--psm 11 --oem 3"
     text = pytesseract.image_to_string(img, config=config).upper()
 
     codes = set()
-    codes.update(CODE_PATTERN.findall(text))
+    for code in CODE_PATTERN.findall(text):
+        if is_real_code(code):
+            codes.add(code)
     for a, b, c in SPACED_PATTERN.findall(text):
-        codes.add(f"{a}-{b}-{c}")
+        code = f"{a}-{b}-{c}"
+        if is_real_code(code):
+            codes.add(code)
 
     return codes
 
