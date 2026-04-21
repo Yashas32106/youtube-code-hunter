@@ -1,7 +1,7 @@
 feedparser
 yt-dlp
 opencv-python-headless
-pytesseract
+easyocr
 Pillow
 flask
 requests

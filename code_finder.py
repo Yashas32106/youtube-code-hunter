@@ -1,46 +1,38 @@
-import pytesseract
 import re
 import os
-from PIL import Image
+import numpy as np
+import easyocr
 
-_win_tesseract = r"C:\Program Files\Tesseract-OCR\tesseract.exe"
-if os.path.exists(_win_tesseract):
-    pytesseract.pytesseract.tesseract_cmd = _win_tesseract
+_reader = None
+
+def _get_reader():
+    global _reader
+    if _reader is None:
+        _reader = easyocr.Reader(['en'], gpu=False, verbose=False)
+    return _reader
 
 # Exact format: XXXX-XXXXXX-XXXX (4-6-4 alphanumeric)
-CODE_PATTERN = re.compile(r'\b([A-Z0-9]{4}-[A-Z0-9]{6}-[A-Z0-9]{4})\b')
+CODE_PATTERN = re.compile(r'([A-Z0-9]{4}-[A-Z0-9]{6}-[A-Z0-9]{4})')
 
 # Handle OCR spacing errors: XXXX XXXXXX XXXX
-SPACED_PATTERN = re.compile(r'\b([A-Z0-9]{4})\s([A-Z0-9]{6})\s([A-Z0-9]{4})\b')
-
-
-def preprocess_frame(image_path):
-    """Convert to grayscale to improve OCR accuracy"""
-    img = Image.open(image_path).convert("L")
-    return img
-
-
-def is_real_code(code):
-    parts = code.replace("-", "")
-    has_letter = any(c.isalpha() for c in parts)
-    has_digit = any(c.isdigit() for c in parts)
-    return has_letter and has_digit
+SPACED_PATTERN = re.compile(r'([A-Z0-9]{4})\s([A-Z0-9]{6})\s([A-Z0-9]{4})')
 
 
 def extract_codes_from_frame(image_path):
-    img = preprocess_frame(image_path)
-    config = "--psm 11 --oem 3"
-    text = pytesseract.image_to_string(img, config=config).upper()
+    reader = _get_reader()
+    # Read top 25% of frame — codes appear at top, subtitles at bottom
+    import cv2
+    img = cv2.imread(image_path)
+    h, w = img.shape[:2]
+    top = img[0:int(h * 0.25), :]
+
+    results = reader.readtext(top, detail=0)
+    text = " ".join(results).upper()
 
     codes = set()
-    for code in CODE_PATTERN.findall(text):
-        if is_real_code(code):
-            codes.add(code)
+    codes.update(CODE_PATTERN.findall(text))
     for a, b, c in SPACED_PATTERN.findall(text):
-        code = f"{a}-{b}-{c}"
-        if is_real_code(code):
-            codes.add(code)
-
+        codes.add(f"{a}-{b}-{c}")
     return codes
 
 

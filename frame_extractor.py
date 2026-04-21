@@ -10,11 +10,11 @@ def get_smart_fps(video_path):
     cap.release()
 
     if duration < 300:
-        return 2        # Under 5 mins → 2fps
+        return 4        # Under 5 mins → 4fps
     elif duration < 600:
-        return 1        # Under 10 mins → 1fps
+        return 2        # Under 10 mins → 2fps
     else:
-        return 0.5      # Long video → 0.5fps
+        return 1        # Long video → 1fps
 
 
 def extract_frames(video_path, output_dir="frames"):
